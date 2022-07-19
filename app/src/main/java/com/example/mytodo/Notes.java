@@ -6,11 +6,19 @@ import java.util.Date;
 
 public class Notes implements Parcelable {
 
-    int id;
-    static int count = 0;
-    String title, description;
-    Date date;
+    private int id;
+    private static int count = 0;
+    private String title, description;
+    private Date date;
 
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     protected Notes(Parcel in) {
         id = in.readInt();
