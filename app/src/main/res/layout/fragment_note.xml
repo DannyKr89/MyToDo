@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,52 +7,58 @@
     android:focusable="true"
     tools:context=".NoteFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/etTitle"
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/black"
-            android:hint="@string/hint_title"
-            android:padding="@dimen/default_margin"
-            android:singleLine="true"
-            android:textColor="@color/white"
-            android:textSize="@dimen/title_text_size"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/etDescription"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/okBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/default_margin"
-            android:foreground="@drawable/ic_baseline_check_24"
-            app:layout_constraintBottom_toBottomOf="@id/etTitle"
-            app:layout_constraintEnd_toEndOf="@id/etTitle"
-            app:layout_constraintTop_toTopOf="@id/etTitle" />
+            <EditText
+                android:id="@+id/etTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:background="@color/black"
+                android:hint="@string/hint_title"
+                android:padding="@dimen/default_margin"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textColorHint="@color/light_grey"
+                android:textSize="@dimen/title_text_size"
+                android:textStyle="bold" />
 
-        <androidx.appcompat.widget.AppCompatEditText
+            <Button
+                android:id="@+id/okBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/purple_500"
+                android:foreground="@drawable/ic_baseline_check_24"
+                android:foregroundTint="@color/white"
+                android:includeFontPadding="false" />
+
+        </LinearLayout>
+
+        <EditText
             android:id="@+id/etDescription"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/white"
             android:gravity="top"
+            android:hint="@string/note_description"
+            android:textColorHint="@color/light_grey"
             android:padding="@dimen/fragment_padding"
             android:textColor="@color/black"
             android:textSize="@dimen/description_text_size"
-            app:layout_constraintBottom_toTopOf="@id/tvDate"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etTitle" />
+            android:layout_weight="1" />
 
-        <androidx.appcompat.widget.AppCompatTextView
+        <TextView
             android:id="@+id/tvDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,9 +67,6 @@
             android:textColor="@color/white"
             android:textAlignment="textEnd"
             android:textSize="@dimen/date_text_size"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etDescription" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            tools:ignore="RtlSymmetry" />
+    </LinearLayout>
 </FrameLayout>
