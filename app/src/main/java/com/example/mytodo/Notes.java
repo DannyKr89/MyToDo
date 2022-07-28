@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 
 public class Notes implements Parcelable {
@@ -80,4 +81,5 @@ public class Notes implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
     }
+
 }

@@ -32,10 +32,24 @@ public class AboutFragment extends Fragment {
         setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_about, container, false);
     }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.close:
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .popBackStack();
+        }
+        return false;
+    }
+
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         menu.findItem(R.id.add_note).setVisible(false);
         menu.findItem(R.id.about).setVisible(false);
+        menu.findItem(R.id.settings).setVisible(false);
+        menu.findItem(R.id.exit).setVisible(false);
+        menu.findItem(R.id.close).setVisible(true);
     }
 }
