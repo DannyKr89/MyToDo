@@ -10,4 +10,14 @@
     <string name="in_progress">В разработке!</string>
     <string name="note_description">Описание заметки</string>
     <string name="delete">Удалить</string>
+    <string name="note_saved">Заметка сохранена!</string>
+    <string name="note_added">Заметка добавлена!</string>
+    <string name="cancel">Отмена</string>
+    <string name="note_deleted">Заметка удалена!</string>
+    <string name="note_restored">Заметка восстановлена!</string>
+    <string name="ask_exit">Вы действительно хотите выйти?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="app_closed">Приложение закрыто!</string>
+    <string name="close">Закрыть</string>
 </resources>
