@@ -104,23 +104,20 @@ public class MainActivity extends AppCompatActivity {
         Notes deletedNote = arrNotes.get(index);
         arrNotes.remove(index);
         initNotes();
-        Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
-                .setAction(cancel, v -> {
-                    Notes backUpNote = deletedNote;
-                    arrNotes.add(backUpNote);
-                    initNotes();
-                    Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
-                })
-                .show();
+        makeSnackbar(deletedNote);
     }
 
     public void deleteNote(Notes notes) {
         Notes deletedNote = notes;
         arrNotes.remove(notes);
         initNotes();
+        makeSnackbar(deletedNote);
+    }
+
+    public void makeSnackbar(Notes note){
         Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
-                    Notes backUpNote = deletedNote;
+                    Notes backUpNote = note;
                     arrNotes.add(backUpNote);
                     initNotes();
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
