@@ -1,7 +1,5 @@
 package com.example.mytodo;
 
-import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,8 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import java.util.Objects;
 
 
 public class NoteFragment extends Fragment {
@@ -64,12 +60,11 @@ public class NoteFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.delete:
-                ((MainActivity) requireActivity()).deleteNote(notes);
-                requireActivity()
-                        .getSupportFragmentManager()
-                        .popBackStack();
+        if (item.getItemId() == R.id.delete) {
+            ((MainActivity) requireActivity()).deleteNote(notes);
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .popBackStack();
         }
 
         return super.onOptionsItemSelected(item);

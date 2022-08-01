@@ -5,6 +5,7 @@ import static com.example.mytodo.R.string.note_added;
 import static com.example.mytodo.R.string.note_deleted;
 import static com.example.mytodo.R.string.note_restored;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Notes> arrNotes;
     private final String KEY_NOTES = "notes";
     private final String[] colors = {"#AAAAAA", "#CCCCCC"};
-    private FragmentManager fm = getSupportFragmentManager();
+    private final FragmentManager fm = getSupportFragmentManager();
 
 
     @Override
@@ -65,9 +66,7 @@ public class MainActivity extends AppCompatActivity {
             tv.setBackgroundColor(Color.parseColor(colors[i % 2]));
             layout.addView(tv);
             final int index = i;
-            tv.setOnClickListener(v -> {
-                showNote(arrNotes.get(index));
-            });
+            tv.setOnClickListener(v -> showNote(arrNotes.get(index)));
             tv.setOnLongClickListener(v -> {
                 showPopupMenu(v, index);
                 return true;
@@ -81,18 +80,18 @@ public class MainActivity extends AppCompatActivity {
         fm.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.frameLL, nf)
-                .addToBackStack("")
+                .addToBackStack(null)
                 .commit();
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void showPopupMenu(View view, int index) {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.inflate(R.menu.popup);
         popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.delete_note:
-                    deleteNote(index);
-                    return true;
+            if (item.getItemId() == R.id.delete_note) {
+                deleteNote(index);
+                return true;
             }
             return false;
         });
@@ -108,17 +107,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteNote(Notes notes) {
-        Notes deletedNote = notes;
         arrNotes.remove(notes);
         initNotes();
-        makeSnackbar(deletedNote);
+        makeSnackbar(notes);
     }
 
     public void makeSnackbar(Notes note){
         Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
-                    Notes backUpNote = note;
-                    arrNotes.add(backUpNote);
+                    arrNotes.add(note);
                     initNotes();
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
                 })
@@ -131,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
