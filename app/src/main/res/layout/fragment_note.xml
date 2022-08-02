@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
+    android:orientation="vertical"
     tools:context=".NoteFragment">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,18 +25,20 @@
                 android:padding="@dimen/default_margin"
                 android:singleLine="true"
                 android:textColor="@color/white"
+                android:inputType="textCapSentences"
                 android:textColorHint="@color/light_grey"
                 android:textSize="@dimen/title_text_size"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:autofillHints="" />
 
-            <Button
+            <ImageView
                 android:id="@+id/okBtn"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@color/purple_500"
-                android:foreground="@drawable/ic_baseline_check_24"
-                android:foregroundTint="@color/white"
-                android:includeFontPadding="false" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/bttn"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_done"
+                tools:ignore="ContentDescription" />
 
         </LinearLayout>
 
@@ -52,11 +49,13 @@
             android:background="@color/white"
             android:gravity="top"
             android:hint="@string/note_description"
+            android:inputType="textCapSentences"
             android:textColorHint="@color/light_grey"
             android:padding="@dimen/fragment_padding"
             android:textColor="@color/black"
             android:textSize="@dimen/description_text_size"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:autofillHints="" />
 
         <TextView
             android:id="@+id/tvDate"
@@ -68,5 +67,4 @@
             android:textAlignment="textEnd"
             android:textSize="@dimen/date_text_size"
             tools:ignore="RtlSymmetry" />
-    </LinearLayout>
-</FrameLayout>
+</LinearLayout>

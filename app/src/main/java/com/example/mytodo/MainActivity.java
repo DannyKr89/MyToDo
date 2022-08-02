@@ -9,17 +9,20 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -28,6 +31,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Notes> arrNotes;
+    RecyclerView recyclerView;
+    LayoutInflater layoutInflater;
     private final String KEY_NOTES = "notes";
     private final String[] colors = {"#AAAAAA", "#CCCCCC"};
     private final FragmentManager fm = getSupportFragmentManager();
@@ -37,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         if (savedInstanceState == null) {
             arrNotes = new ArrayList<>();
@@ -56,15 +60,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void initNotes() {
         LinearLayout layout = findViewById(R.id.frameNotes);
+        layoutInflater = getLayoutInflater();
         layout.removeAllViews();
+
         for (int i = 0; i < arrNotes.size(); i++) {
-            TextView tv = new TextView(MainActivity.this);
+            View view = layoutInflater.inflate(R.layout.item_note, layout,false);
+            TextView tv = view.findViewById(R.id.title_note);
             tv.setText(arrNotes.get(i).getTitle());
-            tv.setTextSize(30);
-            tv.setPadding(10, 10, 10, 10);
-            tv.setSingleLine(true);
+
             tv.setBackgroundColor(Color.parseColor(colors[i % 2]));
-            layout.addView(tv);
+            layout.addView(view);
             final int index = i;
             tv.setOnClickListener(v -> showNote(arrNotes.get(index)));
             tv.setOnLongClickListener(v -> {
