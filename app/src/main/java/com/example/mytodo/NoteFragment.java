@@ -1,7 +1,5 @@
 package com.example.mytodo;
 
-import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,12 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import java.util.Objects;
 
 
 public class NoteFragment extends Fragment {
@@ -50,17 +47,28 @@ public class NoteFragment extends Fragment {
         }
 
 
-        requireActivity().findViewById(R.id.okBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                notes.setTitle(etTitle.getText().toString());
-                notes.setDescription(etDescription.getText().toString());
-                updateNote();
-                requireActivity().getSupportFragmentManager().popBackStack();
-            }
+        requireActivity().findViewById(R.id.okBtn).setOnClickListener(v -> {
+            notes.setTitle(etTitle.getText().toString());
+            notes.setDescription(etDescription.getText().toString());
+            Toast.makeText(requireActivity(), R.string.note_saved, Toast.LENGTH_SHORT).show();
+            updateNote();
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .popBackStack();
         });
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.delete) {
+            ((MainActivity) requireActivity()).deleteNote(notes);
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .popBackStack();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     private void updateNote() {
         ((MainActivity) requireActivity()).initNotes();
@@ -76,9 +84,8 @@ public class NoteFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        MenuItem itemAdd = menu.findItem(R.id.add_note);
-        if (itemAdd != null){
-            itemAdd.setVisible(false);
+        menu.findItem(R.id.delete).setVisible(true);
+        menu.findItem(R.id.add_note).setVisible(false);
         }
-    }
+
 }

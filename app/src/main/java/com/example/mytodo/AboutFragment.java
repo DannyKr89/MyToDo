@@ -1,5 +1,6 @@
 package com.example.mytodo;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,13 +15,6 @@ import android.view.ViewGroup;
 
 public class AboutFragment extends Fragment {
 
-    public static AboutFragment newInstance(String param1, String param2) {
-        AboutFragment fragment = new AboutFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,8 +28,22 @@ public class AboutFragment extends Fragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.close) {
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .popBackStack();
+        }
+        return false;
+    }
+
+
+    @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         menu.findItem(R.id.add_note).setVisible(false);
         menu.findItem(R.id.about).setVisible(false);
+        menu.findItem(R.id.settings).setVisible(false);
+        menu.findItem(R.id.exit).setVisible(false);
+        menu.findItem(R.id.close).setVisible(true);
     }
 }

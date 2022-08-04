@@ -1,9 +1,14 @@
 package com.example.mytodo;
 
+import static com.example.mytodo.R.string.cancel;
+import static com.example.mytodo.R.string.note_added;
+import static com.example.mytodo.R.string.note_deleted;
+import static com.example.mytodo.R.string.note_restored;
+
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,15 +19,19 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Notes> arrNotes;
+    private final String KEY_NOTES = "notes";
     private final String[] colors = {"#AAAAAA", "#CCCCCC"};
+    private final FragmentManager fm = getSupportFragmentManager();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
             arrNotes.add(new Notes("Приготовить еду", "рашгфрыаadsfasdfгфыа"));
             arrNotes.add(new Notes("Приготовить еду sfsdafadfaf", "рашгфрыагфыа"));
         } else {
-            arrNotes = savedInstanceState.getParcelableArrayList("notes");
+            arrNotes = savedInstanceState.getParcelableArrayList(KEY_NOTES);
         }
         initNotes();
 
@@ -57,44 +66,60 @@ public class MainActivity extends AppCompatActivity {
             tv.setBackgroundColor(Color.parseColor(colors[i % 2]));
             layout.addView(tv);
             final int index = i;
-            tv.setOnClickListener(v -> {
-                showNote(arrNotes.get(index));
+            tv.setOnClickListener(v -> showNote(arrNotes.get(index)));
+            tv.setOnLongClickListener(v -> {
+                showPopupMenu(v, index);
+                return true;
             });
-            tv.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    showPopupMenu(v,index);
-                    return true;
-                }
-            });
+
         }
-    }
-    private void showPopupMenu(View view, int index){
-        PopupMenu popupMenu = new PopupMenu(this, view);
-        popupMenu.inflate(R.menu.popup);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.delete_note:
-                        arrNotes.remove(index);
-                        initNotes();
-                        return true;
-                }
-                return false;
-            }
-        });
-        popupMenu.show();
     }
 
     private void showNote(Notes notes) {
         NoteFragment nf = NoteFragment.newInstance(notes);
-        getSupportFragmentManager()
-                .beginTransaction()
+        fm.beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.frameLL, nf)
-                .addToBackStack("")
+                .addToBackStack(null)
                 .commit();
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    private void showPopupMenu(View view, int index) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.inflate(R.menu.popup);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.delete_note) {
+                deleteNote(index);
+                return true;
+            }
+            return false;
+        });
+        popupMenu.show();
+    }
+
+
+    public void deleteNote(int index) {
+        Notes deletedNote = arrNotes.get(index);
+        arrNotes.remove(index);
+        initNotes();
+        makeSnackbar(deletedNote);
+    }
+
+    public void deleteNote(Notes notes) {
+        arrNotes.remove(notes);
+        initNotes();
+        makeSnackbar(notes);
+    }
+
+    public void makeSnackbar(Notes note){
+        Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
+                .setAction(cancel, v -> {
+                    arrNotes.add(note);
+                    initNotes();
+                    Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
+                })
+                .show();
     }
 
     @Override
@@ -103,38 +128,45 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
-
             case R.id.add_note:
                 Notes newNote = new Notes();
                 arrNotes.add(newNote);
-                getSupportFragmentManager()
-                        .beginTransaction()
+                fm.beginTransaction()
                         .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
                         .addToBackStack(null)
                         .commit();
+                Toast.makeText(this, note_added, Toast.LENGTH_SHORT).show();
                 return true;
 
             case R.id.settings:
-                getSupportFragmentManager()
-                        .beginTransaction()
+                fm.beginTransaction()
                         .replace(R.id.frameLL, new SettingsFragment())
                         .addToBackStack(null)
                         .commit();
                 return true;
+
             case R.id.about:
-                getSupportFragmentManager()
-                        .beginTransaction()
+                fm.beginTransaction()
                         .replace(R.id.frameLL, new AboutFragment())
                         .addToBackStack(null)
                         .commit();
                 return true;
 
             case R.id.exit:
-                finish();
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.exit)
+                        .setMessage(R.string.ask_exit)
+                        .setPositiveButton(R.string.yes, (dialog, which) -> {
+                            finish();
+                            Toast.makeText(this, R.string.app_closed, Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton(R.string.no, null)
+                        .show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -144,12 +176,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("notes", arrNotes);
+        outState.putParcelableArrayList(KEY_NOTES, arrNotes);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        arrNotes = savedInstanceState.getParcelableArrayList("notes");
+        arrNotes = savedInstanceState.getParcelableArrayList(KEY_NOTES);
     }
 }
