@@ -1,29 +1,53 @@
 package com.example.mytodo;
 
-import java.time.LocalDateTime;
+import android.os.Parcel;
+import android.os.Parcelable;
+import java.util.Date;
 
-public class Notes implements iNotes {
+public class Notes implements Parcelable {
 
-    int id, count;
-    String title, description;
-    LocalDateTime date;
+    private int id;
+    private static int count = 0;
+    private String title, description;
+    private Date date;
 
-    @Override
-    public Notes setTitle(String title) {
+
+    public void setTitle(String title) {
         this.title = title;
-        return this;
     }
 
-    @Override
-    public Notes setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
-        return this;
     }
 
-    @Override
-    public Notes setDate(LocalDateTime date) {
+    protected Notes(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        description = in.readString();
+    }
+
+    public static final Creator<Notes> CREATOR = new Creator<Notes>() {
+        @Override
+        public Notes createFromParcel(Parcel in) {
+            return new Notes(in);
+        }
+
+        @Override
+        public Notes[] newArray(int size) {
+            return new Notes[size];
+        }
+    };
+
+    public Notes(String title, String description, Date date) {
+        this.id = count++;
+        this.title = title;
+        this.description = description;
         this.date = date;
-        return this;
+    }
+
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -34,7 +58,19 @@ public class Notes implements iNotes {
         return description;
     }
 
-    public LocalDateTime getDate() {
+    public Date getDate() {
         return date;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(description);
     }
 }
