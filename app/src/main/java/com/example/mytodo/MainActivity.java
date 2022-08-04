@@ -3,9 +3,14 @@ package com.example.mytodo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Notes> arrNotes;
     private final String[] colors = {"#AAAAAA", "#CCCCCC"};
-    Date date = Calendar.getInstance().getTime();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +32,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             arrNotes = new ArrayList<>();
-            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв", date));
-            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda", date));
-            arrNotes.add(new Notes("Приготовить еду", "рашгфрdsafasdfыагфыа", date));
-            arrNotes.add(new Notes("Приготовить еду", "рашгфрыаasdfsaгфыа", date));
-            arrNotes.add(new Notes("Приготовить еду", "рашгфрыаadsfasdfгфыа", date));
-            arrNotes.add(new Notes("Приготовить еду sfsdafadfaf", "рашгфрыагфыа", date));
+            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
+            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
+            arrNotes.add(new Notes("Приготовить еду", "рашгфрdsafasdfыагфыа"));
+            arrNotes.add(new Notes("Приготовить еду", "рашгфрыаasdfsaгфыа"));
+            arrNotes.add(new Notes("Приготовить еду", "рашгфрыаadsfasdfгфыа"));
+            arrNotes.add(new Notes("Приготовить еду sfsdafadfaf", "рашгфрыагфыа"));
         } else {
             arrNotes = savedInstanceState.getParcelableArrayList("notes");
         }
@@ -56,7 +60,31 @@ public class MainActivity extends AppCompatActivity {
             tv.setOnClickListener(v -> {
                 showNote(arrNotes.get(index));
             });
+            tv.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    showPopupMenu(v,index);
+                    return true;
+                }
+            });
         }
+    }
+    private void showPopupMenu(View view, int index){
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.inflate(R.menu.popup);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.delete_note:
+                        arrNotes.remove(index);
+                        initNotes();
+                        return true;
+                }
+                return false;
+            }
+        });
+        popupMenu.show();
     }
 
     private void showNote(Notes notes) {
@@ -68,6 +96,50 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack("")
                 .commit();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.add_note:
+                Notes newNote = new Notes();
+                arrNotes.add(newNote);
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
+                        .addToBackStack(null)
+                        .commit();
+                return true;
+
+            case R.id.settings:
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frameLL, new SettingsFragment())
+                        .addToBackStack(null)
+                        .commit();
+                return true;
+            case R.id.about:
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frameLL, new AboutFragment())
+                        .addToBackStack(null)
+                        .commit();
+                return true;
+
+            case R.id.exit:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {

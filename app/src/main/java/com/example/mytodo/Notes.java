@@ -2,6 +2,8 @@ package com.example.mytodo;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import java.util.Calendar;
 import java.util.Date;
 
 public class Notes implements Parcelable {
@@ -10,6 +12,7 @@ public class Notes implements Parcelable {
     private static int count = 0;
     private String title, description;
     private Date date;
+    private Date newDate = Calendar.getInstance().getTime();
 
 
     public void setTitle(String title) {
@@ -38,11 +41,15 @@ public class Notes implements Parcelable {
         }
     };
 
-    public Notes(String title, String description, Date date) {
+    public Notes(String title, String description) {
         this.id = count++;
         this.title = title;
         this.description = description;
-        this.date = date;
+        this.date = newDate;
+    }
+    public Notes() {
+        this.id = count++;
+        this.date = newDate;
     }
 
 
