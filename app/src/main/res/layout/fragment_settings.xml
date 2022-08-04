@@ -7,7 +7,7 @@
     android:background="@color/light_grey"
     android:clickable="true"
     android:focusable="true"
-    tools:context=".SettingsFragment">
+    tools:context=".ui.SettingsFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"

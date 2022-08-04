@@ -1,22 +1,16 @@
-package com.example.mytodo;
+package com.example.mytodo.ui;
 
 import static com.example.mytodo.R.string.cancel;
-import static com.example.mytodo.R.string.note_added;
 import static com.example.mytodo.R.string.note_deleted;
 import static com.example.mytodo.R.string.note_restored;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,17 +18,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mytodo.R;
+import com.example.mytodo.common.NoteAdapter;
+import com.example.mytodo.common.Notes;
+import com.example.mytodo.presenter.NotePresenter;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Notes> arrNotes;
+    private ArrayList<Notes> arrNotes = new ArrayList<>();
     RecyclerView recyclerView;
-    LayoutInflater layoutInflater;
+    NotePresenter presenter;
+    NoteAdapter noteAdapter;
     private final String KEY_NOTES = "notes";
-    private final String[] colors = {"#AAAAAA", "#CCCCCC"};
     private final FragmentManager fm = getSupportFragmentManager();
 
 
@@ -42,10 +40,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        recyclerView = findViewById(R.id.recyclerView);
+        noteAdapter = new NoteAdapter(this, arrNotes);
+
 
         if (savedInstanceState == null) {
             arrNotes = new ArrayList<>();
+            arrNotes.add(new Notes("заметка 1 длиннный тайтл ывплаооапылвопаоыпваоыпва", "фывфыadsfdasfasdfвфыв"));
             arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
+            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
+            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
+            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
+            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
+            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
+            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
+            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
+            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
+            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
             arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
             arrNotes.add(new Notes("Приготовить еду", "рашгфрdsafasdfыагфыа"));
             arrNotes.add(new Notes("Приготовить еду", "рашгфрыаasdfsaгфыа"));
@@ -54,44 +65,41 @@ public class MainActivity extends AppCompatActivity {
         } else {
             arrNotes = savedInstanceState.getParcelableArrayList(KEY_NOTES);
         }
+
         initNotes();
 
     }
 
     public void initNotes() {
-        LinearLayout layout = findViewById(R.id.frameNotes);
-        layoutInflater = getLayoutInflater();
-        layout.removeAllViews();
+        noteAdapter = new NoteAdapter(this, arrNotes);
+        recyclerView.setAdapter(noteAdapter);
+        noteAdapter.SetOnItemClickListener(new NoteAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                showNote(arrNotes.get(position));
+            }
+        });
+        noteAdapter.SetOnItemLongClickListener(new NoteAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View view, int position) {
+                showPopupMenu(view, position);
+            }
+        });
 
-        for (int i = 0; i < arrNotes.size(); i++) {
-            View view = layoutInflater.inflate(R.layout.item_note, layout,false);
-            TextView tv = view.findViewById(R.id.title_note);
-            tv.setText(arrNotes.get(i).getTitle());
-
-            tv.setBackgroundColor(Color.parseColor(colors[i % 2]));
-            layout.addView(view);
-            final int index = i;
-            tv.setOnClickListener(v -> showNote(arrNotes.get(index)));
-            tv.setOnLongClickListener(v -> {
-                showPopupMenu(v, index);
-                return true;
-            });
-
-        }
     }
 
     private void showNote(Notes notes) {
         NoteFragment nf = NoteFragment.newInstance(notes);
-        fm.beginTransaction()
+        getSupportFragmentManager()
+                .beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.frameLL, nf)
                 .addToBackStack(null)
                 .commit();
     }
 
-    @SuppressLint("NonConstantResourceId")
-    private void showPopupMenu(View view, int index) {
-        PopupMenu popupMenu = new PopupMenu(this, view);
+    private void showPopupMenu(View v, int index) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.inflate(R.menu.popup);
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.delete_note) {
@@ -103,6 +111,15 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
+    public void newNote() {
+        Notes newNote = new Notes();
+        arrNotes.add(newNote);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
+                .addToBackStack(null)
+                .commit();
+    }
 
     public void deleteNote(int index) {
         Notes deletedNote = arrNotes.get(index);
@@ -117,15 +134,17 @@ public class MainActivity extends AppCompatActivity {
         makeSnackbar(notes);
     }
 
-    public void makeSnackbar(Notes note){
+    public void makeSnackbar(Notes note) {
         Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
                     arrNotes.add(note);
                     initNotes();
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
+
                 })
                 .show();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,13 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.add_note:
-                Notes newNote = new Notes();
-                arrNotes.add(newNote);
-                fm.beginTransaction()
-                        .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
-                        .addToBackStack(null)
-                        .commit();
-                Toast.makeText(this, note_added, Toast.LENGTH_SHORT).show();
+                newNote();
                 return true;
 
             case R.id.settings:
@@ -163,18 +176,22 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.exit:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.exit)
-                        .setMessage(R.string.ask_exit)
-                        .setPositiveButton(R.string.yes, (dialog, which) -> {
-                            finish();
-                            Toast.makeText(this, R.string.app_closed, Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton(R.string.no, null)
-                        .show();
+                showAlertDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showAlertDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.exit)
+                .setMessage(R.string.ask_exit)
+                .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    finish();
+                    Toast.makeText(this, R.string.app_closed, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(R.string.no, null)
+                .show();
     }
 
 

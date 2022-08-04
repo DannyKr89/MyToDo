@@ -20,4 +20,5 @@
     <string name="no">Нет</string>
     <string name="app_closed">Приложение закрыто!</string>
     <string name="close">Закрыть</string>
+    <string name="title_is_empty">Заголовок не может быть пустым!</string>
 </resources>
