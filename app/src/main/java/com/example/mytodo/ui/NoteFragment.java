@@ -7,6 +7,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -68,6 +69,8 @@ public class NoteFragment extends Fragment {
                 requireActivity()
                         .getSupportFragmentManager()
                         .popBackStack();
+                InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(imgBttn.getWindowToken(), 0);
             }
         });
     }
