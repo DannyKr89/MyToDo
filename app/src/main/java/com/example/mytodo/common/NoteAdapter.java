@@ -1,6 +1,5 @@
 package com.example.mytodo.common;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,35 +12,33 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mytodo.R;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
-
-    private LayoutInflater inflater;
     private final int[] cardColors = {0xFFAAAAAA, 0xFFCCCCCC};
-    ArrayList<Notes> arrNotes;
+    ArrayList<Notes> data;
+
 
     OnItemClickListener itemClickListener;
     OnItemLongClickListener itemLongClickListener;
 
 
 
-    public NoteAdapter(Context context, ArrayList<Notes> arrNotes) {
-        this.inflater = LayoutInflater.from(context);
-        this.arrNotes = arrNotes;
-
+    public void initNotes(ArrayList<Notes> data) {
+        this.data = data;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.item_note, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note, parent, false);
         return new NoteViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
-        Notes note = arrNotes.get(position);
+        Notes note = data.get(position);
+
         CardView cardView = holder.cardView;
         TextView textViewTitle = holder.textViewTitle;
         TextView textViewDescription = holder.textViewDescription;
@@ -59,7 +56,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
     @Override
     public int getItemCount() {
-        return arrNotes.size();
+        return data.size();
     }
 
 

@@ -16,7 +16,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mytodo.R;
 import com.example.mytodo.common.Notes;
@@ -25,7 +24,6 @@ import com.example.mytodo.common.Notes;
 public class NoteFragment extends Fragment {
     private Notes notes;
     private static final String ARG_NOTE = "note";
-    RecyclerView recyclerView;
 
 
     @Override
@@ -40,7 +38,6 @@ public class NoteFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = requireActivity().findViewById(R.id.recyclerView);
         EditText etTitle = view.findViewById(R.id.etTitle);
         EditText etDescription = view.findViewById(R.id.etDescription);
         TextView tvDate = view.findViewById(R.id.tvDate);

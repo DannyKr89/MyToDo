@@ -21,17 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.mytodo.R;
 import com.example.mytodo.common.NoteAdapter;
 import com.example.mytodo.common.Notes;
-import com.example.mytodo.presenter.NotePresenter;
+import com.example.mytodo.common.NotesWork;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<Notes> arrNotes = new ArrayList<>();
     RecyclerView recyclerView;
-    NotePresenter presenter;
     NoteAdapter noteAdapter;
+    NotesWork notesWork = new NotesWork();
     private final String KEY_NOTES = "notes";
     private final FragmentManager fm = getSupportFragmentManager();
 
@@ -41,29 +38,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerView);
-        noteAdapter = new NoteAdapter(this, arrNotes);
+        noteAdapter = new NoteAdapter();
+        recyclerView.setAdapter(noteAdapter);
+        noteAdapter.SetOnItemClickListener((view, position) -> showNote(notesWork.data.get(position)));
+        noteAdapter.SetOnItemLongClickListener(this::showPopupMenu);
 
 
         if (savedInstanceState == null) {
-            arrNotes = new ArrayList<>();
-            arrNotes.add(new Notes("заметка 1 длиннный тайтл ывплаооапылвопаоыпваоыпва", "фывфыadsfdasfasdfвфыв"));
-            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
-            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
-            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
-            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
-            arrNotes.add(new Notes("заметка 1", "фывфыadsfdasfasdfвфыв"));
-            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
-            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
-            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
-            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
-            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
-            arrNotes.add(new Notes("sdfsdfs", "asdasdassdafdsafsdafda"));
-            arrNotes.add(new Notes("Приготовить еду", "рашгфрdsafasdfыагфыа"));
-            arrNotes.add(new Notes("Приготовить еду", "рашгфрыаasdfsaгфыа"));
-            arrNotes.add(new Notes("Приготовить еду", "рашгфрыаadsfasdfгфыа"));
-            arrNotes.add(new Notes("Приготовить еду sfsdafadfaf", "рашгфрыагфыа"));
+            notesWork.initNotes();
         } else {
-            arrNotes = savedInstanceState.getParcelableArrayList(KEY_NOTES);
+            notesWork.data = savedInstanceState.getParcelableArrayList(KEY_NOTES);
         }
 
         initNotes();
@@ -71,21 +55,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initNotes() {
-        noteAdapter = new NoteAdapter(this, arrNotes);
-        recyclerView.setAdapter(noteAdapter);
-        noteAdapter.SetOnItemClickListener(new NoteAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                showNote(arrNotes.get(position));
-            }
-        });
-        noteAdapter.SetOnItemLongClickListener(new NoteAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(View view, int position) {
-                showPopupMenu(view, position);
-            }
-        });
-
+        noteAdapter.initNotes(notesWork.data);
     }
 
     private void showNote(Notes notes) {
@@ -104,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.delete_note) {
                 deleteNote(index);
+//                notesWork.data.remove(index);
                 return true;
             }
             return false;
@@ -113,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void newNote() {
         Notes newNote = new Notes();
-        arrNotes.add(newNote);
+        notesWork.addNote(newNote);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
@@ -122,14 +93,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteNote(int index) {
-        Notes deletedNote = arrNotes.get(index);
-        arrNotes.remove(index);
-        initNotes();
-        makeSnackbar(deletedNote);
+        Notes deletedNote = notesWork.data.get(index);
+        deleteNote(deletedNote);
     }
 
     public void deleteNote(Notes notes) {
-        arrNotes.remove(notes);
+        notesWork.removeNote(notes);
         initNotes();
         makeSnackbar(notes);
     }
@@ -137,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     public void makeSnackbar(Notes note) {
         Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
-                    arrNotes.add(note);
+                    notesWork.addNote(note);
                     initNotes();
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
 
@@ -198,12 +167,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(KEY_NOTES, arrNotes);
+        outState.putParcelableArrayList(KEY_NOTES, notesWork.data);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        arrNotes = savedInstanceState.getParcelableArrayList(KEY_NOTES);
+        notesWork.data = savedInstanceState.getParcelableArrayList(KEY_NOTES);
     }
 }
