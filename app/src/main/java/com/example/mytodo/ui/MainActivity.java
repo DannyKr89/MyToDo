@@ -44,9 +44,7 @@ public class MainActivity extends AppCompatActivity {
         noteAdapter.SetOnItemLongClickListener(this::showPopupMenu);
 
 
-        if (savedInstanceState == null) {
-            notesWork.initNotes();
-        } else {
+        if (savedInstanceState != null) {
             notesWork.data = savedInstanceState.getParcelableArrayList(KEY_NOTES);
         }
 
@@ -74,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.delete_note) {
                 deleteNote(index);
-//                notesWork.data.remove(index);
                 return true;
             }
             return false;
@@ -97,10 +94,10 @@ public class MainActivity extends AppCompatActivity {
         deleteNote(deletedNote);
     }
 
-    public void deleteNote(Notes notes) {
-        notesWork.removeNote(notes);
+    public void deleteNote(Notes note) {
+        notesWork.removeNote(note);
         initNotes();
-        makeSnackbar(notes);
+        makeSnackbar(note);
     }
 
     public void makeSnackbar(Notes note) {
