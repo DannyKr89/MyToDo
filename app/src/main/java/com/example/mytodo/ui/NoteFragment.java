@@ -1,4 +1,4 @@
-package com.example.mytodo;
+package com.example.mytodo.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,7 +7,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,10 +17,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.mytodo.R;
+import com.example.mytodo.common.Notes;
+
 
 public class NoteFragment extends Fragment {
+
     private Notes notes;
     private static final String ARG_NOTE = "note";
+
+    private void hideKeyboard(){
+        View view = this.getView();
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
 
     @Override
@@ -26,6 +38,7 @@ public class NoteFragment extends Fragment {
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_note, container, false);
+
 
     }
 
@@ -35,6 +48,7 @@ public class NoteFragment extends Fragment {
         EditText etTitle = view.findViewById(R.id.etTitle);
         EditText etDescription = view.findViewById(R.id.etDescription);
         TextView tvDate = view.findViewById(R.id.tvDate);
+        ImageView imgBttn = view.findViewById(R.id.okBtn);
 
         if (getArguments() != null) {
             notes = getArguments().getParcelable(ARG_NOTE);
@@ -44,17 +58,23 @@ public class NoteFragment extends Fragment {
             etTitle.setText(title);
             etDescription.setText(description);
             tvDate.setText(String.valueOf(notes.getDate()));
+            imgBttn.setBackgroundColor(notes.getColor());
         }
 
 
-        requireActivity().findViewById(R.id.okBtn).setOnClickListener(v -> {
-            notes.setTitle(etTitle.getText().toString());
-            notes.setDescription(etDescription.getText().toString());
-            Toast.makeText(requireActivity(), R.string.note_saved, Toast.LENGTH_SHORT).show();
-            updateNote();
-            requireActivity()
-                    .getSupportFragmentManager()
-                    .popBackStack();
+        imgBttn.setOnClickListener(v -> {
+            if (etTitle.getText().toString().equals("")) {
+                Toast.makeText(requireActivity(), R.string.title_is_empty, Toast.LENGTH_SHORT).show();
+            } else {
+                notes.setTitle(etTitle.getText().toString());
+                notes.setDescription(etDescription.getText().toString());
+                Toast.makeText(requireActivity(), R.string.note_saved, Toast.LENGTH_SHORT).show();
+                updateNote();
+                requireActivity()
+                        .getSupportFragmentManager()
+                        .popBackStack();
+                hideKeyboard();
+            }
         });
     }
 
@@ -65,6 +85,7 @@ public class NoteFragment extends Fragment {
             requireActivity()
                     .getSupportFragmentManager()
                     .popBackStack();
+            hideKeyboard();
         }
 
         return super.onOptionsItemSelected(item);
