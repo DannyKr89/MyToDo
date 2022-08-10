@@ -22,8 +22,15 @@ import com.example.mytodo.common.Notes;
 
 
 public class NoteFragment extends Fragment {
+
     private Notes notes;
     private static final String ARG_NOTE = "note";
+
+    private void hideKeyboard(){
+        View view = this.getView();
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
 
     @Override
@@ -66,8 +73,7 @@ public class NoteFragment extends Fragment {
                 requireActivity()
                         .getSupportFragmentManager()
                         .popBackStack();
-                InputMethodManager inputMethodManager = (InputMethodManager)getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(imgBttn.getWindowToken(), 0);
+                hideKeyboard();
             }
         });
     }
@@ -79,6 +85,7 @@ public class NoteFragment extends Fragment {
             requireActivity()
                     .getSupportFragmentManager()
                     .popBackStack();
+            hideKeyboard();
         }
 
         return super.onOptionsItemSelected(item);
