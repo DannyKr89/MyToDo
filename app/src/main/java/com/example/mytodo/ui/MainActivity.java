@@ -79,9 +79,13 @@ public class MainActivity extends AppCompatActivity {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.inflate(R.menu.popup);
         popupMenu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.delete_note) {
-                deleteNote(index);
-                return true;
+            switch (item.getItemId()) {
+                case R.id.delete_note:
+                    deleteNote(index);
+                    return true;
+                case R.id.change_note:
+                    showNote(notesWork.data.get(index));
+                    return true;
             }
             return false;
         });
