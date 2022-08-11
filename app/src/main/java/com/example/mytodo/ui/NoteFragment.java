@@ -93,7 +93,7 @@ public class NoteFragment extends Fragment {
     }
 
     private void updateNote() {
-        ((MainActivity) requireActivity()).changeNotes(notes);
+        ((MainActivity) requireActivity()).initNotes();
     }
 
     public static NoteFragment newInstance(Notes notes) {

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mytodo.R;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         noteAdapter = new NoteAdapter();
         recyclerView.setAdapter(noteAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         noteAdapter.SetOnItemClickListener((view, position) -> showNote(notesDB.getNotes().get(position)));
         noteAdapter.SetOnItemLongClickListener(this::showPopupMenu);
 
@@ -58,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
     public void initNotes() {
         noteAdapter.initNotes(notesDB.getNotes());
     }
+
+    public void insertNotes(Notes note) {
+        noteAdapter.notifyItemInserted(note.getId());
+    }
+
 
     public void deleteNotes(Notes note) {
         noteAdapter.notifyItemRemoved(note.getId());
@@ -77,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void showPopupMenu(View v, int index) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.inflate(R.menu.popup);
@@ -102,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
                 .addToBackStack(null)
                 .commit();
+        insertNotes(newNote);
+        recyclerView.scrollToPosition(newNote.getId());
     }
 
     public void deleteNote(int index) {
