@@ -1,6 +1,7 @@
 package com.example.mytodo.ui;
 
 import static com.example.mytodo.R.string.cancel;
+import static com.example.mytodo.R.string.no;
 import static com.example.mytodo.R.string.note_deleted;
 import static com.example.mytodo.R.string.note_restored;
 
@@ -44,9 +45,7 @@ public class MainActivity extends AppCompatActivity {
         noteAdapter.SetOnItemLongClickListener(this::showPopupMenu);
 
 
-        if (savedInstanceState == null) {
-            notesWork.initNotes();
-        } else {
+        if (savedInstanceState != null) {
             notesWork.data = savedInstanceState.getParcelableArrayList(KEY_NOTES);
         }
 
@@ -56,6 +55,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void initNotes() {
         noteAdapter.initNotes(notesWork.data);
+    }
+
+    public void deleteNotes(Notes note) {
+        noteAdapter.notifyItemRemoved(note.getId());
+    }
+
+    public void changeNotes(Notes note) {
+        noteAdapter.notifyItemChanged(note.getId());
     }
 
     private void showNote(Notes notes) {
@@ -74,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.delete_note) {
                 deleteNote(index);
-//                notesWork.data.remove(index);
                 return true;
             }
             return false;
@@ -97,17 +103,17 @@ public class MainActivity extends AppCompatActivity {
         deleteNote(deletedNote);
     }
 
-    public void deleteNote(Notes notes) {
-        notesWork.removeNote(notes);
-        initNotes();
-        makeSnackbar(notes);
+    public void deleteNote(Notes note) {
+        notesWork.removeNote(note);
+        deleteNotes(note);
+        makeSnackbar(note);
     }
 
     public void makeSnackbar(Notes note) {
         Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
                     notesWork.addNote(note);
-                    initNotes();
+                    changeNotes(note);
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
 
                 })

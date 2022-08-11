@@ -1,5 +1,6 @@
 package com.example.mytodo.common;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +18,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     private final int[] cardColors = {0xFFAAAAAA, 0xFFCCCCCC};
     ArrayList<Notes> data;
 
-
     OnItemClickListener itemClickListener;
     OnItemLongClickListener itemLongClickListener;
 
 
-
+    @SuppressLint("NotifyDataSetChanged")
     public void initNotes(ArrayList<Notes> data) {
         this.data = data;
         notifyDataSetChanged();
@@ -38,20 +38,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
         Notes note = data.get(position);
-
-        CardView cardView = holder.cardView;
-        TextView textViewTitle = holder.textViewTitle;
-        TextView textViewDescription = holder.textViewDescription;
-        TextView textViewDate = holder.textViewDate;
-        TextView textViewId = holder.textViewId;
-
-        textViewTitle.setText(note.getTitle());
-        textViewTitle.setSelected(true);
-        textViewDescription.setText(note.getDescription());
-        textViewDate.setText(note.getDate());
-        textViewId.setText(String.valueOf(note.getId() + 1));
-        textViewId.setBackgroundColor(note.getColor());
-        cardView.setCardBackgroundColor(cardColors[position % 2]);
+        holder.bindContent(note);
     }
 
     @Override
@@ -98,6 +85,16 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
             textViewDescription = itemView.findViewById(R.id.description_note);
             textViewDate = itemView.findViewById(R.id.date_note);
             textViewId = itemView.findViewById(R.id.id_note);
+        }
+
+        private void bindContent(Notes note){
+            textViewTitle.setText(note.getTitle());
+            textViewTitle.setSelected(true);
+            textViewDescription.setText(note.getDescription());
+            textViewDate.setText(note.getDate());
+            textViewId.setText(String.valueOf(note.getId() + 1));
+            textViewId.setBackgroundColor(note.getColor());
+            cardView.setCardBackgroundColor(cardColors[note.getId() % 2]);
         }
 
     }

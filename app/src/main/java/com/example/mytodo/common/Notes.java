@@ -29,6 +29,7 @@ public class Notes implements Parcelable {
             0xFFFF9800,
             0xFFFF5722,
     };
+
     private Random random = new Random();
 
     private static int count = 0;
