@@ -1,6 +1,7 @@
 package com.example.mytodo.ui;
 
 import static com.example.mytodo.R.string.cancel;
+import static com.example.mytodo.R.string.no;
 import static com.example.mytodo.R.string.note_deleted;
 import static com.example.mytodo.R.string.note_restored;
 
@@ -56,6 +57,14 @@ public class MainActivity extends AppCompatActivity {
         noteAdapter.initNotes(notesWork.data);
     }
 
+    public void deleteNotes(Notes note) {
+        noteAdapter.notifyItemRemoved(note.getId());
+    }
+
+    public void changeNotes(Notes note) {
+        noteAdapter.notifyItemChanged(note.getId());
+    }
+
     private void showNote(Notes notes) {
         NoteFragment nf = NoteFragment.newInstance(notes);
         getSupportFragmentManager()
@@ -96,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteNote(Notes note) {
         notesWork.removeNote(note);
-        initNotes();
+        deleteNotes(note);
         makeSnackbar(note);
     }
 
@@ -104,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
                     notesWork.addNote(note);
-                    initNotes();
+                    changeNotes(note);
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
 
                 })

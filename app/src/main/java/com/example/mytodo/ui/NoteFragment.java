@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.mytodo.R;
+import com.example.mytodo.common.NoteAdapter;
 import com.example.mytodo.common.Notes;
 
 
@@ -92,7 +93,7 @@ public class NoteFragment extends Fragment {
     }
 
     private void updateNote() {
-        ((MainActivity) requireActivity()).initNotes();
+        ((MainActivity) requireActivity()).changeNotes(notes);
     }
 
     public static NoteFragment newInstance(Notes notes) {
