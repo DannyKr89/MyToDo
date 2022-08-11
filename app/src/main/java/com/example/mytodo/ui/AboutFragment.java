@@ -46,6 +46,7 @@ public class AboutFragment extends Fragment {
         menu.findItem(R.id.about).setVisible(false);
         menu.findItem(R.id.settings).setVisible(false);
         menu.findItem(R.id.exit).setVisible(false);
+        menu.findItem(R.id.clear_all_notes).setVisible(false);
         menu.findItem(R.id.close).setVisible(true);
     }
 }

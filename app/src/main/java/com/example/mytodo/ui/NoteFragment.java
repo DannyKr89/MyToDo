@@ -108,6 +108,7 @@ public class NoteFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         menu.findItem(R.id.delete).setVisible(true);
         menu.findItem(R.id.add_note).setVisible(false);
+        menu.findItem(R.id.clear_all_notes).setVisible(false);
         }
 
 }

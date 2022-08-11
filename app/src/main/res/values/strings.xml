@@ -15,6 +15,7 @@
     <string name="cancel">Отмена</string>
     <string name="note_deleted">Заметка удалена!</string>
     <string name="note_restored">Заметка восстановлена!</string>
+    <string name="notes_restored">Все заметки восстановлены!</string>
     <string name="ask_exit">Вы действительно хотите выйти?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
@@ -22,4 +23,6 @@
     <string name="close">Закрыть</string>
     <string name="title_is_empty">Заголовок не может быть пустым!</string>
     <string name="change">Изменить</string>
+    <string name="clear_all_notes">Удалить все</string>
+    <string name="all_notes_clear">Все заметки удалены!</string>
 </resources>
