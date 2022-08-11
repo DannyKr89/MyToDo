@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mytodo.R;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         noteAdapter = new NoteAdapter();
         recyclerView.setAdapter(noteAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         noteAdapter.SetOnItemClickListener((view, position) -> showNote(notesDB.getNotes().get(position)));
         noteAdapter.SetOnItemLongClickListener(this::showPopupMenu);
 
@@ -59,13 +61,7 @@ public class MainActivity extends AppCompatActivity {
         noteAdapter.initNotes(notesDB.getNotes());
     }
 
-    public void deleteNotes(Notes note) {
-        noteAdapter.notifyItemRemoved(note.getId());
-    }
 
-    public void changeNotes(Notes note) {
-        noteAdapter.notifyItemChanged(note.getId());
-    }
 
     private void showNote(Notes notes) {
         NoteFragment nf = NoteFragment.newInstance(notes);
@@ -77,6 +73,19 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    public void newNote() {
+        Notes newNote = new Notes();
+        notesDB.addNote(newNote);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
+                .addToBackStack(null)
+                .commit();
+        noteAdapter.notifyItemInserted(newNote.getId());
+        recyclerView.scrollToPosition(newNote.getId());
+    }
+
+    @SuppressLint("NonConstantResourceId")
     private void showPopupMenu(View v, int index) {
         PopupMenu popupMenu = new PopupMenu(this, v);
         popupMenu.inflate(R.menu.popup);
@@ -94,24 +103,16 @@ public class MainActivity extends AppCompatActivity {
         popupMenu.show();
     }
 
-    public void newNote() {
-        Notes newNote = new Notes();
-        notesDB.addNote(newNote);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frameLL, NoteFragment.newInstance(newNote))
-                .addToBackStack(null)
-                .commit();
-    }
-
     public void deleteNote(int index) {
         Notes deletedNote = notesDB.getNotes().get(index);
-        deleteNote(deletedNote);
+        notesDB.removeNote(notesDB.getNotes().get(index));
+        noteAdapter.notifyItemRemoved(index);
+        makeSnackbarDeleteNotes(deletedNote);
     }
 
     public void deleteNote(Notes note) {
         notesDB.removeNote(note);
-        deleteNotes(note);
+        initNotes();
         makeSnackbarDeleteNotes(note);
     }
 
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         Snackbar.make(findViewById(R.id.frameLL), note_deleted, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
                     notesDB.addNote(note);
-                    changeNotes(note);
+                    noteAdapter.notifyItemInserted(notesDB.getNotes().size()-1);
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
 
                 })
