@@ -2,32 +2,33 @@ package com.example.mytodo.common;
 
 import java.util.ArrayList;
 
-public class NotesDB {
-    private ArrayList<Notes> Notes = new ArrayList<>();
+public class NotesDB implements INotesDB {
+    private ArrayList<Notes> notes = new ArrayList<>();
     private static NotesDB instanceDB = null;
 
-    public static NotesDB getInstanceDB(){
-        if(instanceDB == null){
+    public static NotesDB getInstanceDB() {
+        if (instanceDB == null) {
             instanceDB = new NotesDB();
         }
         return instanceDB;
     }
 
     public ArrayList<Notes> getNotes() {
-        return Notes;
+        return notes;
     }
 
     public void setNotes(ArrayList<com.example.mytodo.common.Notes> notes) {
-        Notes = notes;
+        this.notes = notes;
     }
 
-    public void addNote(Notes note){
-        Notes.add(note);
+
+    public void addNote(Notes note) {
+        notes.add(note);
 
     }
 
-    public void removeNote(Notes notes){
-        this.Notes.remove(notes);
+    public void removeNote(Notes notes) {
+        this.notes.remove(notes);
 
     }
 }
