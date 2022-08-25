@@ -70,11 +70,11 @@ public class NoteFragment extends Fragment {
                 notes.setTitle(etTitle.getText().toString());
                 notes.setDescription(etDescription.getText().toString());
                 Toast.makeText(requireActivity(), R.string.note_saved, Toast.LENGTH_SHORT).show();
-                updateNote();
                 requireActivity()
                         .getSupportFragmentManager()
                         .popBackStack();
                 hideKeyboard();
+                updateNote();
             }
         });
     }
@@ -93,7 +93,7 @@ public class NoteFragment extends Fragment {
     }
 
     private void updateNote() {
-        ((MainActivity) requireActivity()).changeNotes(notes);
+        ((MainActivity) requireActivity()).noteAdapter.notifyItemChanged(notes.getId());
     }
 
     public static NoteFragment newInstance(Notes notes) {
@@ -108,6 +108,7 @@ public class NoteFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         menu.findItem(R.id.delete).setVisible(true);
         menu.findItem(R.id.add_note).setVisible(false);
+        menu.findItem(R.id.clear_all_notes).setVisible(false);
         }
 
 }
