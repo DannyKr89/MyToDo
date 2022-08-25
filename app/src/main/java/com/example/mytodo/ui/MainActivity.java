@@ -7,7 +7,9 @@ import static com.example.mytodo.R.string.notes_restored;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +27,10 @@ import com.example.mytodo.common.NoteAdapter;
 import com.example.mytodo.common.Notes;
 import com.example.mytodo.common.NotesDB;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     NoteAdapter noteAdapter;
     NotesDB notesDB = NotesDB.getInstanceDB();
+    SharedPreferences sharedPreferences;
     private final String KEY_NOTES = "notes";
+    private final String KEY_SP = "notes";
     private final FragmentManager fm = getSupportFragmentManager();
 
 
@@ -41,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getSharedPreferences(KEY_SP, MODE_PRIVATE);
+
         recyclerView = findViewById(R.id.recyclerView);
         noteAdapter = new NoteAdapter();
         recyclerView.setAdapter(noteAdapter);
@@ -58,7 +68,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initNotes() {
-        noteAdapter.initNotes(notesDB.getNotes());
+
+        String savedNote = sharedPreferences.getString(KEY_SP, null);
+        if (savedNote == null) {
+
+        } else {
+            try {
+                Type type = new TypeToken<ArrayList<Notes>>() {
+                }.getType();
+                notesDB.setNotes(new GsonBuilder().create().fromJson(savedNote, type));
+            } catch (Exception e) {
+
+            }
+        }
+
+        noteAdapter.initNotes();
     }
 
 
@@ -82,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
         noteAdapter.notifyItemInserted(newNote.getId());
-        recyclerView.scrollToPosition(newNote.getId());
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -108,12 +131,14 @@ public class MainActivity extends AppCompatActivity {
         notesDB.removeNote(notesDB.getNotes().get(index));
         noteAdapter.notifyItemRemoved(index);
         makeSnackbarDeleteNotes(deletedNote);
+        saveToJson(notesDB.getNotes());
     }
 
     public void deleteNote(Notes note) {
         notesDB.removeNote(note);
         initNotes();
         makeSnackbarDeleteNotes(note);
+        saveToJson(notesDB.getNotes());
     }
 
     public void makeSnackbarDeleteNotes(Notes note) {
@@ -122,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     notesDB.addNote(note);
                     noteAdapter.notifyItemInserted(notesDB.getNotes().size()-1);
                     Toast.makeText(this, note_restored, Toast.LENGTH_SHORT).show();
+                    saveToJson(notesDB.getNotes());
 
                 })
                 .show();
@@ -131,9 +157,9 @@ public class MainActivity extends AppCompatActivity {
         Snackbar.make(findViewById(R.id.frameLL), R.string.all_notes_clear, Snackbar.LENGTH_LONG)
                 .setAction(cancel, v -> {
                     notesDB.setNotes(notes);
-                    initNotes();
+                    noteAdapter.initNotes();
                     Toast.makeText(this, notes_restored, Toast.LENGTH_SHORT).show();
-
+                    saveToJson(notesDB.getNotes());
                 })
                 .show();
     }
@@ -157,8 +183,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.clear_all_notes:
                 ArrayList<Notes> notesBackup = new ArrayList<>(notesDB.getNotes());
                 notesDB.getNotes().clear();
-                initNotes();
                 makeSnackbarClearAllNotes(notesBackup);
+                saveToJson(notesDB.getNotes());
+                noteAdapter.notifyDataSetChanged();
                 return true;
 
             case R.id.settings:
@@ -194,11 +221,17 @@ public class MainActivity extends AppCompatActivity {
                 .show();
     }
 
+    public void saveToJson(ArrayList<Notes> notes) {
+        String jsonNote = new GsonBuilder().create().toJson(notes);
+        sharedPreferences.edit().putString(KEY_SP, jsonNote).apply();
+
+    }
+
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(KEY_NOTES, notesDB.getNotes());
+        outState.putParcelableArrayList(KEY_NOTES, (ArrayList<? extends Parcelable>) notesDB.getNotes());
     }
 
     @Override

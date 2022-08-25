@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
     private final int[] cardColors = {0xFFAAAAAA, 0xFFCCCCCC};
+    NotesDB notesDB = NotesDB.getInstanceDB();
     ArrayList<Notes> data;
 
     OnItemClickListener itemClickListener;
@@ -23,8 +24,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
 
     @SuppressLint("NotifyDataSetChanged")
-    public void initNotes(ArrayList<Notes> data) {
-        this.data = data;
+    public void initNotes() {
+        this.data = notesDB.getNotes();
         notifyDataSetChanged();
     }
 
@@ -65,11 +66,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
 
     public class NoteViewHolder extends RecyclerView.ViewHolder {
 
-        CardView cardView;
-        TextView textViewTitle;
-        TextView textViewDescription;
-        TextView textViewDate;
-        TextView textViewId;
+        private final CardView cardView;
+        private final TextView textViewTitle;
+        private final TextView textViewDescription;
+        private final TextView textViewDate;
+        private final TextView textViewId;
 
 
         public NoteViewHolder(@NonNull View itemView) {

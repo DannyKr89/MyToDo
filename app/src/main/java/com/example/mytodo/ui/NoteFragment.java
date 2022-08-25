@@ -18,14 +18,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.mytodo.R;
-import com.example.mytodo.common.NoteAdapter;
 import com.example.mytodo.common.Notes;
+import com.example.mytodo.common.NotesDB;
 
 
 public class NoteFragment extends Fragment {
 
     private Notes notes;
     private static final String ARG_NOTE = "note";
+    NotesDB notesDB = NotesDB.getInstanceDB();
 
     private void hideKeyboard(){
         View view = this.getView();
@@ -58,7 +59,7 @@ public class NoteFragment extends Fragment {
 
             etTitle.setText(title);
             etDescription.setText(description);
-            tvDate.setText(String.valueOf(notes.getDate()));
+            tvDate.setText(notes.getDate());
             imgBttn.setBackgroundColor(notes.getColor());
         }
 
@@ -75,6 +76,7 @@ public class NoteFragment extends Fragment {
                         .popBackStack();
                 hideKeyboard();
                 updateNote();
+
             }
         });
     }
@@ -94,6 +96,7 @@ public class NoteFragment extends Fragment {
 
     private void updateNote() {
         ((MainActivity) requireActivity()).noteAdapter.notifyItemChanged(notes.getId());
+        ((MainActivity) requireActivity()).saveToJson(notesDB.getNotes());
     }
 
     public static NoteFragment newInstance(Notes notes) {
